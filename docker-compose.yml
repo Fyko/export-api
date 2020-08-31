@@ -1,0 +1,11 @@
+version: "3.7"
+
+services:
+  exportapi:
+    build:
+      dockerfile: Dockerfile
+      context: .
+    ports:
+      - "8080:80"
+    expose:
+      - "8080"

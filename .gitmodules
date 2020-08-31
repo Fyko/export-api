@@ -1,0 +1,6 @@
+[submodule "ExportAPI/DiscordChatExporter"]
+	path = ExportAPI/DiscordChatExporter
+	url = git@github.com:Tyrrrz/DiscordChatExporter.git
+[submodule "DiscordChatExporter"]
+	path = DiscordChatExporter
+	url = git@github.com:Tyrrrz/DiscordChatExporter.git
