@@ -58,7 +58,7 @@ async function exportChannel(channelId: string, token: string): Promise<Buffer> 
 }
 ```
 #### Rust
-```rs
+```rust
 // reqwest = { version = "0.10", features = ["json"] }
 use reqwest::Client;
 use std::collections::HashMap;
