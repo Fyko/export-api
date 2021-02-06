@@ -10,15 +10,21 @@ jobs:
     name: Docker
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
+      - uses: actions/checkout@v2
 
-    - name: Checkout submodules
-      uses: textbook/git-checkout-submodule-action@master
+      - uses: actions/checkout@v2
+      - name: Checkout submodules
+        shell: bash
+        run: |
+          git config --global url."https://github.com/".insteadOf "git@github.com:"
+          auth_header="$(git config --local --get http.https://github.com/.extraheader)"
+          git submodule sync --recursive
+          git -c "http.extraheader=$auth_header" -c protocol.version=2 submodule update --init --force --recursive --depth=1
 
-    - name: Build & Publish
-      uses: jerray/publish-docker-action@v1.0.5
-      with:
-        repository: fyko/export-api
-        username: ${{ secrets.DOCKER_USERNAME }}
-        password: ${{ secrets.DOCKER_PASSWORD }}
-        auto_tag: true
+      - name: Build & Publish
+        uses: jerray/publish-docker-action@v1.0.5
+        with:
+          repository: fyko/export-api
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+          auto_tag: true
