@@ -18,6 +18,9 @@ jobs:
       with:
         dotnet-version: 5.0.x
 
+    - name: Checkout submodules
+      uses: textbook/git-checkout-submodule-action@master
+
     - name: Restore dependencies
       run: dotnet restore
 

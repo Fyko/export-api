@@ -4,9 +4,6 @@ WORKDIR /source
 
 COPY . .
 
-# WORKDIR /source/DiscordChatExporter/DiscordChatExporter.Domain
-# RUN dotnet restore
-
 RUN dotnet restore
 RUN dotnet publish -c release -o /app --no-restore
 
