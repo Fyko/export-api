@@ -1,9 +1,8 @@
 using System;
 using System.IO;
-using System.Net;
 using System.Net.Http;
-using System.Text.Json;
 using System.Threading.Tasks;
+using System.Text.Json;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using DiscordChatExporter.Domain.Discord;
@@ -11,7 +10,6 @@ using DiscordChatExporter.Domain.Exceptions;
 using DiscordChatExporter.Domain.Exporting;
 using DiscordChatExporter.Domain.Discord.Models;
 using Newtonsoft.Json;
-
 namespace ExportAPI.Controllers
 {
 	[ApiController]
@@ -47,7 +45,8 @@ namespace ExportAPI.Controllers
 		[HttpPost]
 		public async Task<Stream> Post(ExportOptions options)
 		{
-			var channelId = options.ChannelId;
+			var parsed = Snowflake.TryParse(options.ChannelId);
+			var channelId = parsed ?? Snowflake.Zero;
 
 			var token = new AuthToken(AuthTokenType.Bot, options.Token);
 			var client = new DiscordClient(token);
@@ -58,6 +57,7 @@ namespace ExportAPI.Controllers
 			}
 			catch (DiscordChatExporterException e)
 			{
+				_logger.LogError($"{e}");
 				var isUnauthorized = e.Message.Contains("Authentication");
 				var content = isUnauthorized ? "Invalid Discord token provided." : "Please provide a valid channel";
 
@@ -68,14 +68,14 @@ namespace ExportAPI.Controllers
 
 			var guild = await client.GetGuildAsync(channel.GuildId);
 
-			using var req = new HttpRequestMessage(HttpMethod.Get, new Uri("https://discord.com/api/users/@me"));
+			using var req = new HttpRequestMessage(HttpMethod.Get, new Uri("https://discord.com/api/v8/users/@me"));
 			req.Headers.Authorization = token.GetAuthorizationHeader();
 			var res = await _httpclient.SendAsync(req, HttpCompletionOption.ResponseHeadersRead);
 			var text = await res.Content.ReadAsStringAsync();
-			var me = JsonConvert.DeserializeObject<User>(text);
+			var me = DiscordChatExporter.Domain.Discord.Models.User.Parse(JsonDocument.Parse(text).RootElement.Clone());
 
 			_logger.LogInformation($"[{me.FullName} ({me.Id})] Exporting #{channel.Name} ({channel.Id}) within {guild.Name} ({guild.Id})");
-			var path = GetPath(channel.Id);
+			var path = GetPath(channel.Id.ToString());
 
 			var request = new ExportRequest(
 				guild,
@@ -85,6 +85,7 @@ namespace ExportAPI.Controllers
 				null,
 				null,
 				null,
+				false,
 				false,
 				"dd-MMM-yy hh:mm tt"
 			);

@@ -1,8 +1,13 @@
 # Build
-FROM mcr.microsoft.com/dotnet/core/sdk:3.1 AS build
+FROM mcr.microsoft.com/dotnet/sdk:5.0 AS build
 WORKDIR /source
 
-COPY . ./
+COPY . .
+
+#WORKDIR /source/DiscordChatExporter/DiscordChatExporter.Domain
+#RUN dotnet restore
+
+WORKDIR /source/ExportAPI
 RUN dotnet restore
 RUN dotnet publish -c release -o /app --no-restore
 
