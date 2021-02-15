@@ -1,0 +1,74 @@
+- name: help wanted
+  color: "159818"
+- name: "meta: backport"
+  color: ffe900
+- name: "meta: cleanup"
+  color: ffe900
+- name: "meta: code style"
+  color: ffe900
+- name: "meta: dependencies"
+  color: ffe900
+- name: "meta: documentation"
+  color: ffe900
+- name: "meta: examples"
+  color: ffe900
+- name: "meta: meme"
+  color: ffe900
+- name: "meta: refactor"
+  color: ffe900
+- name: "meta: roadmap"
+  color: ffe900
+- name: "meta: tests"
+  color: ffe900
+- name: "meta: tooling"
+  color: ffe900
+- name: "meta: v8"
+  color: ffe900
+- name: "meta: webpack"
+  color: ffe900
+- name: "p: high"
+  color: d11f1f
+- name: "p: low"
+  color: ffc9c9
+- name: "p: medium"
+  color: ef6556
+- name: "s: already fixed"
+  color: eebcff
+- name: "s: cannot reproduce"
+  color: eebcff
+- name: "s: duplicate"
+  color: eebcff
+- name: "s: in progress"
+  color: eebcff
+- name: "s: invalid"
+  color: eebcff
+- name: "s: potentially fixed"
+  color: eebcff
+- name: "s: unverified"
+  color: eebcff
+- name: "s: won't fix"
+  color: eebcff
+- name: "semver: N/A"
+  color: fff0db
+- name: "semver: major"
+  color: ff8800
+- name: "semver: minor"
+  color: fc9d2f
+- name: "semver: patch"
+  color: ffb766
+- name: "t: error handling"
+  color: "31e097"
+- name: "t: utility"
+  color: "31e097"
+- name: "type: bug"
+  color: af310e
+- name: "type: bugfix"
+  color: af310e
+- name: "type: discussion"
+  color: f8f8f8
+- name: "type: enhancement"
+  color: 84b6eb
+- name: "type: typo"
+  color: c5def5
+- name: web editor (test extensively)
+  color: 006b75
