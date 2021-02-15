@@ -45,7 +45,7 @@ __JSON Body__
 | token         | string        | The bot token for performing requests                                                                                                                                            |
 | channel_id    | string        | The id of the channel to export                                                                                                                                                  |
 | export_format | ?ExportFormat | The format to export the channel as, defaults to `HtmlDark`                                                                                                                      |
-| date_format   | string        | The [date format](https://docs.microsoft.com/en-us/dotnet/standard/base-types/custom-date-and-time-format-strings) for dates in exported files, defaults to `dd-MMM-yy hh:mm tt` |
+| date_format   | ?string        | The [date format](https://docs.microsoft.com/en-us/dotnet/standard/base-types/custom-date-and-time-format-strings) for dates in exported files, defaults to `dd-MMM-yy hh:mm tt` |
 | after         | ?string       | Only include messages sent after this date                                                                                                                                       |
 | before        | ?string       | Only include messages sent before this date                                                                                                                                      |
 
