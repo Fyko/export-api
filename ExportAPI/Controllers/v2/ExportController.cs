@@ -9,11 +9,10 @@ using DiscordChatExporter.Domain.Discord;
 using DiscordChatExporter.Domain.Exceptions;
 using DiscordChatExporter.Domain.Exporting;
 using DiscordChatExporter.Domain.Discord.Models;
-using Newtonsoft.Json;
 namespace ExportAPI.Controllers
 {
 	[ApiController]
-	[Route("v1/export")]
+	[Route("v2/export")]
 	public class ExportController : ControllerBase
 	{
 		private readonly ILogger<ExportController> _logger;
@@ -36,19 +35,31 @@ namespace ExportAPI.Controllers
 			}
 		}
 
-		internal static string GetPath(string channelId)
+		internal static string GetPath(string channelId, ExportFormat exportType)
 		{
 			var nowhex = DateTime.Now.Ticks.ToString("X2");
-			return $"/tmp/exports/{nowhex}/{channelId}.html";
+			return $"/tmp/exports/{nowhex}/{channelId}.{exportType.GetFileExtension()}";
 		}
 
 		[HttpPost]
 		public async Task<Stream> Post(ExportOptions options)
 		{
-			var parsed = Snowflake.TryParse(options.ChannelId);
+			Stream SendJsonError(string error, int status)
+			{
+				Response.ContentType = "application/json";
+				Response.StatusCode = status;
+				return GenerateStreamFromString("{ \"error\": \"" + error + "\" }");
+			}
+
+			if (!Enum.IsDefined(typeof(ExportFormat), options.export_format))
+			{
+				return SendJsonError($"An export format with the id '{options.export_format}' was not found.", 400);
+			}
+
+			var parsed = Snowflake.TryParse(options.channel_id);
 			var channelId = parsed ?? Snowflake.Zero;
 
-			var token = new AuthToken(AuthTokenType.Bot, options.Token);
+			var token = new AuthToken(AuthTokenType.Bot, options.token);
 			var client = new DiscordClient(token);
 			Channel channel;
 			try
@@ -57,13 +68,9 @@ namespace ExportAPI.Controllers
 			}
 			catch (DiscordChatExporterException e)
 			{
-				_logger.LogError($"{e}");
-				var isUnauthorized = e.Message.Contains("Authentication");
-				var content = isUnauthorized ? "Invalid Discord token provided." : "Please provide a valid channel";
-
-				Response.ContentType = "application/json";
-				Response.StatusCode = isUnauthorized ? 401 : 409;
-				return GenerateStreamFromString("{ \"error\": \"" + content + "\" }");
+				if (e.Message.Contains("Authentication")) return SendJsonError("An invalid Discord token was provided.", 401);
+				if (e.Message.Contains("Requested resource does not exist")) return SendJsonError("A channel with the provided ID was not found.", 404);
+				return SendJsonError($"An unknown error occurred: {e.Message}", 500);
 			}
 
 			var guild = await client.GetGuildAsync(channel.GuildId);
@@ -74,29 +81,31 @@ namespace ExportAPI.Controllers
 			var text = await res.Content.ReadAsStringAsync();
 			var me = DiscordChatExporter.Domain.Discord.Models.User.Parse(JsonDocument.Parse(text).RootElement.Clone());
 
-			_logger.LogInformation($"[{me.FullName} ({me.Id})] Exporting #{channel.Name} ({channel.Id}) within {guild.Name} ({guild.Id})");
-			var path = GetPath(channel.Id.ToString());
-
+			var path = GetPath(channel.Id.ToString(), options.export_format);
+			_logger.LogInformation($"[{me.FullName} ({me.Id})] Exporting #{channel.Name} ({channel.Id}) within {guild.Name} ({guild.Id}) to {path}");
 			var request = new ExportRequest(
 				guild,
 				channel,
 				path,
-				ExportFormat.HtmlDark,
-				null,
-				null,
+				options.export_format,
+				Snowflake.TryParse(options.after),
+				Snowflake.TryParse(options.before),
 				null,
 				false,
 				false,
-				"dd-MMM-yy hh:mm tt"
+				options.date_format
 			);
 
 			var exporter = new ChannelExporter(client);
 
+			_logger.LogInformation("Starting export");
 			await exporter.ExportChannelAsync(request);
-
+			_logger.LogInformation("Finished exporting");
 			var stream = new FileStream(path, FileMode.Open);
 
-			Response.ContentType = "text/html; charset=UTF-8";
+			var ext = options.export_format.GetFileExtension();
+			if (ext == "txt") ext = "plain";
+			Response.ContentType = $"text/{ext}; charset=UTF-8";
 			Response.StatusCode = 200;
 
 			deleteFile(path);
@@ -104,10 +113,20 @@ namespace ExportAPI.Controllers
 			return stream;
 		}
 
-		async internal void deleteFile(string path) {
+		async internal void deleteFile(string path)
+		{
 			await Task.Delay(TimeSpan.FromSeconds(30));
-			System.IO.File.Delete(path);
-			_logger.LogInformation($"Deleted {path}");
+			var exists = System.IO.File.Exists(path);
+			if (exists)
+			{
+				try
+				{
+					System.IO.File.Delete(path);
+					_logger.LogInformation($"Deleted {path}");
+				}
+				catch { }
+			}
+
 		}
 
 		internal Stream GenerateStreamFromString(string s)
@@ -123,7 +142,15 @@ namespace ExportAPI.Controllers
 
 	public class ExportOptions
 	{
-		public string Token { get; set; }
-		public string ChannelId { get; set; }
+		public string token { get; set; }
+		public string channel_id { get; set; }
+
+		public string after { get; set; }
+
+		public string before { get; set; }
+
+		public ExportFormat export_format { get; set; } = ExportFormat.HtmlDark;
+
+		public string date_format { get; set; } = "dd-MMM-yy hh:mm tt";
 	}
 }

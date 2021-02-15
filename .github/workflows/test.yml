@@ -2,13 +2,12 @@ name: Test
 
 on:
   push:
-    branches: [ csharp ]
+    branches: [csharp]
   pull_request:
-    branches: [ csharp ]
+    branches: [csharp]
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
     steps:
