@@ -1,6 +1,8 @@
 # 📥 Discord Channel Exporter API
-![Test](https://github.com/Fyko/export-api/workflows/Test/badge.svg)
-![Docker Pulls](https://img.shields.io/docker/pulls/fyko/export-api)   
+[![License](https://img.shields.io/github/license/fyko/export-api)](https://github.com/fyko/export-api/blob/master/LICENSE.md)
+[![Test](https://github.com/Fyko/export-api/workflows/Test/badge.svg)](https://github.com/Fyko/export-api/actions?query=workflow%3ATest)
+[![Docker Pulls](https://img.shields.io/docker/pulls/fyko/export-api)](https://hub.docker.com/r/fyko/export-api)
+[![Ko-fi Donate](https://img.shields.io/badge/kofi-donate-brightgreen.svg?label=Donate%20with%20Ko-fi&logo=ko-fi&colorB=F16061&link=https://ko-fi.com/carterh&logoColor=FFFFFF)](https://ko-fi.com/carterh)  
 An API to create HTML exports of Discord text-channels
 
 ## Preface
