@@ -5,10 +5,12 @@ using System.Threading.Tasks;
 using System.Text.Json;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using DiscordChatExporter.Domain.Discord;
-using DiscordChatExporter.Domain.Exceptions;
-using DiscordChatExporter.Domain.Exporting;
-using DiscordChatExporter.Domain.Discord.Models;
+using DiscordChatExporter.Core.Discord;
+using DiscordChatExporter.Core.Exceptions;
+using DiscordChatExporter.Core.Exporting;
+using DiscordChatExporter.Core.Exporting.Filtering;
+using DiscordChatExporter.Core.Discord.Data;
+
 namespace ExportAPI.Controllers
 {
 	[ApiController]
@@ -47,7 +49,7 @@ namespace ExportAPI.Controllers
 			var parsed = Snowflake.TryParse(options.ChannelId);
 			var channelId = parsed ?? Snowflake.Zero;
 
-			var token = new AuthToken(AuthTokenType.Bot, options.Token);
+			var token = new AuthToken(AuthTokenKind.Bot, options.Token);
 			var client = new DiscordClient(token);
 			Channel channel;
 			try
@@ -67,10 +69,10 @@ namespace ExportAPI.Controllers
 			var guild = await client.GetGuildAsync(channel.GuildId);
 
 			using var req = new HttpRequestMessage(HttpMethod.Get, new Uri("https://discord.com/api/v8/users/@me"));
-			req.Headers.Authorization = token.GetAuthorizationHeader();
+			req.Headers.Authorization = token.GetAuthenticationHeader();
 			var res = await _httpclient.SendAsync(req, HttpCompletionOption.ResponseHeadersRead);
 			var text = await res.Content.ReadAsStringAsync();
-			var me = DiscordChatExporter.Domain.Discord.Models.User.Parse(JsonDocument.Parse(text).RootElement.Clone());
+			var me = DiscordChatExporter.Core.Discord.Data.User.Parse(JsonDocument.Parse(text).RootElement.Clone());
 
 			_logger.LogInformation($"[{me.FullName} ({me.Id})] Exporting #{channel.Name} ({channel.Id}) within {guild.Name} ({guild.Id})");
 			var path = GetPath(channel.Id.ToString());
@@ -83,6 +85,7 @@ namespace ExportAPI.Controllers
 				null,
 				null,
 				null,
+				MessageFilter.Null,
 				false,
 				false,
 				"dd-MMM-yy hh:mm tt"

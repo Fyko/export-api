@@ -5,10 +5,13 @@ using System.Threading.Tasks;
 using System.Text.Json;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using DiscordChatExporter.Domain.Discord;
-using DiscordChatExporter.Domain.Exceptions;
-using DiscordChatExporter.Domain.Exporting;
-using DiscordChatExporter.Domain.Discord.Models;
+using DiscordChatExporter.Core.Discord;
+using DiscordChatExporter.Core.Exceptions;
+using DiscordChatExporter.Core.Exporting;
+using DiscordChatExporter.Core.Exporting.Partitioning;
+using DiscordChatExporter.Core.Exporting.Filtering;
+using DiscordChatExporter.Core.Discord.Data;
+
 namespace ExportAPI.Controllers
 {
 	[ApiController]
@@ -59,7 +62,7 @@ namespace ExportAPI.Controllers
 			var parsed = Snowflake.TryParse(options.channel_id);
 			var channelId = parsed ?? Snowflake.Zero;
 
-			var token = new AuthToken(AuthTokenType.Bot, options.token);
+			var token = new AuthToken(AuthTokenKind.Bot, options.token);
 			var client = new DiscordClient(token);
 			Channel channel;
 			try
@@ -76,10 +79,10 @@ namespace ExportAPI.Controllers
 			var guild = await client.GetGuildAsync(channel.GuildId);
 
 			using var req = new HttpRequestMessage(HttpMethod.Get, new Uri("https://discord.com/api/v8/users/@me"));
-			req.Headers.Authorization = token.GetAuthorizationHeader();
+			req.Headers.Authorization = token.GetAuthenticationHeader();
 			var res = await _httpclient.SendAsync(req, HttpCompletionOption.ResponseHeadersRead);
 			var text = await res.Content.ReadAsStringAsync();
-			var me = DiscordChatExporter.Domain.Discord.Models.User.Parse(JsonDocument.Parse(text).RootElement.Clone());
+			var me = DiscordChatExporter.Core.Discord.Data.User.Parse(JsonDocument.Parse(text).RootElement.Clone());
 
 			var path = GetPath(channel.Id.ToString(), options.export_format);
 			_logger.LogInformation($"[{me.FullName} ({me.Id})] Exporting #{channel.Name} ({channel.Id}) within {guild.Name} ({guild.Id}) to {path}");
@@ -90,7 +93,8 @@ namespace ExportAPI.Controllers
 				options.export_format,
 				Snowflake.TryParse(options.after),
 				Snowflake.TryParse(options.before),
-				null,
+				PartitionLimit.Null,
+				MessageFilter.Null,
 				false,
 				false,
 				options.date_format
