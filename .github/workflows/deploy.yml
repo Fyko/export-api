@@ -8,6 +8,7 @@ jobs:
   docker:
     name: Docker
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v2
 
@@ -20,9 +21,10 @@ jobs:
           git -c "http.extraheader=$auth_header" -c protocol.version=2 submodule update --init --force --recursive --depth=1
 
       - name: Build & Publish
-        uses: jerray/publish-docker-action@v1.0.5
+        uses: redhat-actions/push-to-registry@v2
         with:
-          repository: fyko/export-api
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
-          auto_tag: true
+          registry: ghrc.io
+          image: fyko/export-api
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+          tags: latest ${{ github.sha }}
