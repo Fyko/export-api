@@ -49,8 +49,7 @@ namespace ExportAPI.Controllers
 			var parsed = Snowflake.TryParse(options.ChannelId);
 			var channelId = parsed ?? Snowflake.Zero;
 
-			var token = new AuthToken(AuthTokenKind.Bot, options.Token);
-			var client = new DiscordClient(token);
+			var client = new DiscordClient(options.Token);
 			Channel channel;
 			try
 			{
@@ -67,12 +66,8 @@ namespace ExportAPI.Controllers
 			}
 
 			var guild = await client.GetGuildAsync(channel.GuildId);
-
-			using var req = new HttpRequestMessage(HttpMethod.Get, new Uri("https://discord.com/api/v8/users/@me"));
-			req.Headers.Authorization = token.GetAuthenticationHeader();
-			var res = await _httpclient.SendAsync(req, HttpCompletionOption.ResponseHeadersRead);
-			var text = await res.Content.ReadAsStringAsync();
-			var me = DiscordChatExporter.Core.Discord.Data.User.Parse(JsonDocument.Parse(text).RootElement.Clone());
+			var res = await client.GetJsonResponseAsync("users/@me");
+			var me = DiscordChatExporter.Core.Discord.Data.User.Parse(res);
 
 			_logger.LogInformation($"[{me.FullName} ({me.Id})] Exporting #{channel.Name} ({channel.Id}) within {guild.Name} ({guild.Id})");
 			var path = GetPath(channel.Id.ToString());

@@ -62,8 +62,8 @@ namespace ExportAPI.Controllers
 			var parsed = Snowflake.TryParse(options.channel_id);
 			var channelId = parsed ?? Snowflake.Zero;
 
-			var token = new AuthToken(AuthTokenKind.Bot, options.token);
-			var client = new DiscordClient(token);
+			var client = new DiscordClient(options.token);
+			client._tokenKind = TokenKind.Bot;
 			Channel channel;
 			try
 			{
@@ -77,12 +77,8 @@ namespace ExportAPI.Controllers
 			}
 
 			var guild = await client.GetGuildAsync(channel.GuildId);
-
-			using var req = new HttpRequestMessage(HttpMethod.Get, new Uri("https://discord.com/api/v8/users/@me"));
-			req.Headers.Authorization = token.GetAuthenticationHeader();
-			var res = await _httpclient.SendAsync(req, HttpCompletionOption.ResponseHeadersRead);
-			var text = await res.Content.ReadAsStringAsync();
-			var me = DiscordChatExporter.Core.Discord.Data.User.Parse(JsonDocument.Parse(text).RootElement.Clone());
+			var res = await client.GetJsonResponseAsync("users/@me");
+			var me = DiscordChatExporter.Core.Discord.Data.User.Parse(res);
 
 			var path = GetPath(channel.Id.ToString(), options.export_format);
 			_logger.LogInformation($"[{me.FullName} ({me.Id})] Exporting #{channel.Name} ({channel.Id}) within {guild.Name} ({guild.Id}) to {path}");
@@ -103,13 +99,14 @@ namespace ExportAPI.Controllers
 			var exporter = new ChannelExporter(client);
 
 			_logger.LogInformation("Starting export");
-			await exporter.ExportChannelAsync(request);
+			var messageCount = await exporter.ExportChannelAsync(request);
 			_logger.LogInformation("Finished exporting");
 			var stream = new FileStream(path, FileMode.Open);
 
 			var ext = options.export_format.GetFileExtension();
 			if (ext == "txt") ext = "plain";
 			Response.ContentType = $"text/{ext}; charset=UTF-8";
+			Response.Headers.Add("X-Message-Count", messageCount.ToString());
 			Response.StatusCode = 200;
 
 			deleteFile(path);
