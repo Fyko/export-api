@@ -24,7 +24,7 @@ jobs:
         id: build
         uses: redhat-actions/buildah-build@v2
         with:
-          image: Fyko/export-api
+          image: fyko/export-api
           tags: latest ${{ github.sha }}
           dockerfiles: |
             ./Dockerfile
