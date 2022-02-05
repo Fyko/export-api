@@ -20,11 +20,23 @@ jobs:
           git submodule sync --recursive
           git -c "http.extraheader=$auth_header" -c protocol.version=2 submodule update --init --force --recursive --depth=1
 
-      - name: Build & Publish
+      - name: Build
+        id: build
+        uses: redhat-actions/buildah-build@v2
+        with:
+          image: Fyko/export-api
+          tags: latest ${{ github.sha }}
+          dockerfiles: |
+            ./Dockerfile
+          build-args: |
+            CREATED_AT=${{ env.datetime }}
+            GITHUB_SHA=${{ github.sha }}
+
+      - name: Publish
         uses: redhat-actions/push-to-registry@v2
         with:
+          image: ${{ steps.build.outputs.image }}
+          tags: ${{ steps.build.outputs.tags }}
           registry: ghrc.io
-          image: fyko/export-api
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-          tags: latest ${{ github.sha }}
