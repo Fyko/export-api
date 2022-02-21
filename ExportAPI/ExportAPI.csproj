@@ -6,10 +6,16 @@
 
   <ItemGroup>
     <ProjectReference Include="..\DiscordChatExporter\DiscordChatExporter.Core\DiscordChatExporter.Core.csproj" />
+    <Protobuf Include="Protos\export.proto" GrpcServices="Server" />
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Calzolari.Grpc.AspNetCore.Validation" Version="6.1.1" />
+    <PackageReference Include="FluentValidation" Version="10.3.6" />
+    <PackageReference Include="Grpc.AspNetCore" Version="2.43.0-pre1" />
+    <PackageReference Include="Grpc.AspNetCore.Server.Reflection" Version="2.43.0-pre1" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+    <PackageReference Include="Gress" Version="2.0.1" />
   </ItemGroup>
 
 </Project>
