@@ -1,0 +1,32 @@
+{
+	"name": "@fyko/export-api",
+	"description": "Generated code for interacting with the Export API.",
+	"version": "0.1.0",
+	"license": "MIT",
+	"files": [
+		"dist",
+		"!dist/*.tsbuildinfo"
+	],
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/Fyko/export-api.git",
+		"directory": "typings"
+	},
+	"scripts": {
+		"build": "tsc",
+		"generate": "./scripts/build-protos.sh ../ExportAPI/Protos/export.proto ./dist"
+	},
+	"dependencies": {
+		"@grpc/grpc-js": "^1.2.2",
+		"google-protobuf": "^3.19.4",
+		"grpc-tools": "^1.10.0",
+		"grpc_tools_node_protoc_ts": "^5.0.1"
+	},
+	"devDependencies": {
+		"typescript": "^4.5.5"
+	},
+	"publishConfig": {
+		"access": "public"
+	},
+	"packageManager": "yarn@3.2.0-rc.16"
+}

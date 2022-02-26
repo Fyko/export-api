@@ -1,0 +1,40 @@
+name: Deploy Client Package
+on:
+  push:
+    branches:
+      - 'main'
+  workflow_dispatch:
+
+jobs:
+  package:
+    name: Publish Client Package
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+      contents: read
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Install Node v16
+        uses: actions/setup-node@v1
+        with:
+          node-version: 16
+          registry-url: https://npm.pkg.github.com/
+          scope: "@fyko"
+
+      - name: Enter Directory
+        run: cd typings
+
+      - name: Install dependencies
+        run: yarn install --immutable
+
+      - name: Build Client and Types
+        run: yarn generate
+
+      - name: Deploy to Github Package Registry
+        uses: yarn npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+
