@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.FileProviders;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -58,12 +57,6 @@ namespace ExportAPI
 				{
 					endpoints.MapGrpcReflectionService();
 				}
-			});
-
-			app.UseStaticFiles(new StaticFileOptions
-			{
-				FileProvider = new PhysicalFileProvider("/tmp/exports"),
-				RequestPath = "/exports"
 			});
 		}
 	}

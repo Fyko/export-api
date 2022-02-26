@@ -108,11 +108,10 @@ public class ExporterService : Exporter.ExporterBase
 			options.DateFormat
 		);
 
-		var progress = new Progress<double>(p => responseStream.WriteAsync(new CreateExportResponse { Progress = p }));
-
 		var exporter = new ChannelExporter(client);
 
 		_logger.LogInformation("Starting export");
+		var progress = new Progress<double>(p => responseStream.WriteAsync(new CreateExportResponse { Progress = p }));
 		var messageCount = await exporter.ExportChannelAsync(request, progress);
 		_logger.LogInformation("Finished exporting");
 

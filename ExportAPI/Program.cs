@@ -15,15 +15,6 @@ namespace ExportAPI
             Host.CreateDefaultBuilder(args)
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
-                    // webBuilder.ConfigureKestrel(options => {
-                    //     options.ListenAnyIP(5001, listenOptions => {
-                    //         listenOptions.Protocols = HttpProtocols.Http2;
-                    //     });
-
-                    //     options.ListenAnyIP(5002, listenOptions => {
-                    //         listenOptions.Protocols = HttpProtocols.Http1;
-                    //     });
-                    // });
                     webBuilder.UseStartup<Startup>();
                 });
     }
