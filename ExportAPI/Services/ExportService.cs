@@ -11,12 +11,16 @@ using DiscordChatExporter.Core.Exporting.Partitioning;
 using DiscordChatExporter.Core.Exporting.Filtering;
 using DiscordChatExporter.Core.Discord.Data;
 using Gress;
+using Google.Protobuf;
+using Google.Protobuf.WellKnownTypes;
 
 namespace ExportAPI.Services;
 
 public class ExporterService : Exporter.ExporterBase
 {
 	private readonly ILogger _logger;
+
+	private const int ChunkSize = 1024 * 32; // 32 KB
 
 	public ExporterService(ILoggerFactory loggerFactory)
 	{
@@ -38,6 +42,21 @@ public class ExporterService : Exporter.ExporterBase
 	{
 		var nowhex = DateTime.Now.Ticks.ToString("X2");
 		return $"/tmp/exports/{nowhex}/{channelId}.{exportType.GetFileExtension()}";
+	}
+
+	internal void deleteFile(string path)
+	{
+		var exists = System.IO.File.Exists(path);
+		if (exists)
+		{
+			try
+			{
+				System.IO.File.Delete(path);
+				_logger.LogInformation($"Deleted {path}");
+			}
+			catch { }
+		}
+
 	}
 
 	public override async Task CreateExport(CreateExportRequest options, IServerStreamWriter<CreateExportResponse> responseStream, ServerCallContext context)
@@ -96,17 +115,29 @@ public class ExporterService : Exporter.ExporterBase
 		_logger.LogInformation("Starting export");
 		var messageCount = await exporter.ExportChannelAsync(request, progress);
 		_logger.LogInformation("Finished exporting");
-		var stream = new FileStream(path, FileMode.Open);
 
-		var ext = exportFormat.GetFileExtension();
-		if (ext == "txt") ext = "plain";
-		// Response.ContentType = $"text/{ext}; charset=UTF-8";
-		// Response.Headers.Add("X-Message-Count", messageCount.ToString());
-		// Response.StatusCode = 200;
 
-		// deleteFile(path);
+		var buffer = new byte[ChunkSize];
+		await using var readStream = File.OpenRead(path);
+		while (true)
+		{
+			var count = await readStream.ReadAsync(buffer);
 
-		// await responseStream.WriteAsync(new CreateExportResponse{ Data = ByteString.FromStream(stream) });
-		await responseStream.WriteAsync(new CreateExportResponse { Data = new ExportComplete { MessageCount = messageCount, Path = path } });
+			if (count == 0)
+			{
+				break;
+			}
+
+			Console.WriteLine("Sending file data chunk of length " + count);
+			await responseStream.WriteAsync(new CreateExportResponse
+			{
+				Data = new ExportComplete {
+					MessageCount = messageCount,
+					Data = UnsafeByteOperations.UnsafeWrap(buffer.AsMemory(0, count))
+				}
+			});
+		}
+
+		deleteFile(path);
 	}
 }

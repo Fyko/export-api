@@ -32,5 +32,5 @@ message CreateExportResponse {
 
 message ExportComplete {
   int32 message_count = 1;
-  string path = 2;
+  bytes data = 2;
 }
