@@ -1,0 +1,51 @@
+{
+	"name": "@fyko/export-api",
+	"description": "Generated code for interacting with the Export API.",
+	"version": "0.1.0",
+	"license": "MIT",
+	"exports": {
+		"./client": {
+			"require": "./dist/client.js",
+			"import": "./dist/client.mjs"
+		},
+		"./types": {
+			"require": "./dist/types.js",
+			"import": "./dist/types.mjs"
+		}
+	},
+	"files": [
+		"generated",
+		"{client,types}.{js,js.map,d.ts,d.ts.map,mjs}"
+	],
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/Fyko/export-api.git",
+		"directory": "typings"
+	},
+	"scripts": {
+		"suite": "yarn generate && tsc && run-p 'esm:*'",
+		"build": "yarn generate && run-p 'esm:*'",
+		"clean": "rimraf {client,types}.{js,mjs,d.ts,*map}",
+		"generate": "./scripts/build-protos.sh ../ExportAPI/Protos/export.proto ./dist",
+		"esm:client": "gen-esm-wrapper ./client.js ./client.mjs",
+		"esm:types": "gen-esm-wrapper ./types.js ./types.mjs",
+		"prepublish": "yarn suite"
+	},
+	"dependencies": {
+		"@grpc/grpc-js": "^1.2.2",
+		"google-protobuf": "^3.19.4",
+		"grpc-tools": "^1.10.0",
+		"grpc_tools_node_protoc_ts": "^5.0.1"
+	},
+	"devDependencies": {
+		"gen-esm-wrapper": "^1.1.3",
+		"npm-run-all": "^4.1.5",
+		"rimraf": "^3.0.2",
+		"typescript": "^4.5.5"
+	},
+	"publishConfig": {
+		"access": "public",
+		"registry":"https://registry.npmjs.com"
+	},
+	"packageManager": "yarn@3.2.0-rc.16"
+}

@@ -1,0 +1,36 @@
+syntax = "proto3";
+
+option csharp_namespace = "ExportAPI.Proto";
+
+service Exporter {
+  rpc CreateExport (CreateExportRequest) returns (stream CreateExportResponse);
+}
+
+enum ExportFormat {
+	PlainText = 0;
+	HtmlDark = 1;
+	HtmlLight = 2;
+	CSV = 3;
+	JSON = 4;
+}
+
+message CreateExportRequest {
+  string token = 1;
+  string channel_id = 2;
+  ExportFormat export_format = 3;
+  string date_format = 4;
+  string after = 5;
+  string before = 6;
+}
+
+message CreateExportResponse {
+  oneof ResponseType {
+    double progress = 1;
+    ExportComplete data = 2;
+  }
+}
+
+message ExportComplete {
+  int32 message_count = 1;
+  bytes data = 2;
+}
