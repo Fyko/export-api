@@ -6,15 +6,24 @@
 		"module": "commonjs",
 		"noUnusedParameters": true,
 		"sourceMap": true,
+		"declaration": true,
+		"declarationMap": true,
 		"moduleResolution": "node",
 		"noUnusedLocals": true,
-		"removeComments": false,
+		"removeComments": true,
 		"target": "ES2020",
 		"importsNotUsedAsValues": "error",
 		"strictNullChecks": true,
-		"outDir": "dist"
+		"preserveConstEnums": true,
+		"exactOptionalPropertyTypes": true
+		// "outDir": "dist"
 	},
 	"exclude": [
-		"node_modules"
+		"node_modules",
+		"test"
+	],
+	"include": [
+		"client.ts",
+		"types.ts",
 	]
 }

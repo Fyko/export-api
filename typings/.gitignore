@@ -1,3 +1,18 @@
+# generated
+package.tgz
+
+generated
+
+client.js
+client.*map
+client.d.ts
+client.mjs
+
+types.js
+types.*map
+types.d.ts
+types.mjs
+
 # Logs
 logs
 *.log

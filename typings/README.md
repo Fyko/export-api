@@ -1,6 +1,12 @@
+# @fyko/export-api
+> "Generated code for interacting with the Export API.
+
+
+## Example
+```
 import { credentials } from '@grpc/grpc-js';
-import { ExporterClient } from '../client';
-import { CreateExportRequest, CreateExportResponse, ExportFormat } from '../types';
+import { ExporterClient } from '@fyko/export-api/client';
+import { CreateExportRequest, CreateExportResponse, ExportFormat } from '@fyko/export-api/types';
 import { writeFile } from 'fs/promises';
 
 const client = new ExporterClient(
@@ -39,3 +45,4 @@ void (async () => {
         stream.on('error', rej);
 	});
 })();
+```
