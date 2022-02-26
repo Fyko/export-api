@@ -1,9 +1,9 @@
 # @fyko/export-api
-> "Generated code for interacting with the Export API.
+> Generated code for interacting with the [Export API]().
 
 
 ## Example
-```
+```ts
 import { credentials } from '@grpc/grpc-js';
 import { ExporterClient } from '@fyko/export-api/client';
 import { CreateExportRequest, CreateExportResponse, ExportFormat } from '@fyko/export-api/types';
