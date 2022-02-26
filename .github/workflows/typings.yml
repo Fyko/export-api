@@ -9,6 +9,9 @@ jobs:
   package:
     name: Publish Client Package
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: typings
     permissions:
       packages: write
       contents: read
@@ -29,9 +32,6 @@ jobs:
         with:
           node-version: 16
           registry-url: https://registry.npmjs.org/
-
-      - name: Enter Directory
-        run: cd typings
 
       - name: Install dependencies
         run: yarn install --immutable
