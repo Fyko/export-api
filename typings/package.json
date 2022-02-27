@@ -1,16 +1,16 @@
 {
 	"name": "@fyko/export-api",
 	"description": "Generated code for interacting with the Export API.",
-	"version": "0.1.0",
+	"version": "0.2.0",
 	"license": "MIT",
 	"exports": {
 		"./client": {
-			"require": "./dist/client.js",
-			"import": "./dist/client.mjs"
+			"require": "./client.js",
+			"import": "./client.mjs"
 		},
 		"./types": {
-			"require": "./dist/types.js",
-			"import": "./dist/types.mjs"
+			"require": "./types.js",
+			"import": "./types.mjs"
 		}
 	},
 	"files": [
