@@ -9,7 +9,7 @@ const config = {
   title: 'Export API',
   tagline: 'An API to export Discord channels as HTML documents.',
   url: 'https://your-docusaurus-test-site.com',
-  baseUrl: '/',
+  baseUrl: '/export-api/',
   onBrokenLinks: 'throw',
   onBrokenMarkdownLinks: 'warn',
   favicon: 'img/favicon.ico',

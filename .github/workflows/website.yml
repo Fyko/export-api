@@ -7,14 +7,13 @@ on:
       - "website/**"
   workflow_dispatch:
 
-defaults:
-  run:
-    working-directory: website
-
 jobs:
   deploy:
     name: Deploy to GitHub Pages
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: website
 
     steps:
       - uses: actions/checkout@v2
