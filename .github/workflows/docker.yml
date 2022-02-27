@@ -1,10 +1,13 @@
-name: Deploy
+name: Deploy Docker Image
+
 on:
   release:
     types: [published]
   push:
-    branches:
-      - 'main'
+    branches: [main]
+    paths:
+      - "ExportAPI/**"
+      - "DiscordChatExporter/**"
 
 jobs:
   docker:

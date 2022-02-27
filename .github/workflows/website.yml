@@ -3,6 +3,9 @@ name: Deploy Website to GitHub Pages
 on:
   push:
     branches: [main]
+    paths:
+      - "website/**"
+  workflow_dispatch:
 
 jobs:
   deploy:
@@ -11,6 +14,7 @@ jobs:
     defaults:
       run:
         working-directory: website
+
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2

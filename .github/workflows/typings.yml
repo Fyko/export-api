@@ -1,8 +1,9 @@
 name: Deploy Client Package
 on:
   push:
-    branches:
-      - 'main'
+    branches: [main]
+    paths:
+      - "typings/**"
   workflow_dispatch:
 
 jobs:
