@@ -1,10 +1,10 @@
 import { credentials } from "@grpc/grpc-js";
-import { ExporterClient } from "../client";
+import { ExporterClient } from "../dist/client";
 import {
   CreateExportRequest,
   CreateExportResponse,
   ExportFormat,
-} from "../types";
+} from "../dist/types";
 import { writeFile } from "fs/promises";
 
 const client = new ExporterClient(

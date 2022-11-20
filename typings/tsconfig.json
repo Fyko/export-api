@@ -15,15 +15,14 @@
 		"importsNotUsedAsValues": "error",
 		"strictNullChecks": true,
 		"preserveConstEnums": true,
-		"exactOptionalPropertyTypes": true
-		// "outDir": "dist"
+		"exactOptionalPropertyTypes": true,
+		"outDir": "dist"
 	},
 	"exclude": [
 		"node_modules",
 		"test"
 	],
 	"include": [
-		"client.ts",
-		"types.ts",
+		"src"
 	]
 }

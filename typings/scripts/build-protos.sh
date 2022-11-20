@@ -15,13 +15,3 @@ yarn run grpc_tools_node_protoc \
     --grpc_out=grpc_js:${PROTO_DEST} \
     -I ../ExportAPI/Protos \
     ../ExportAPI/Protos/*.proto
-
-# cd dist
-
-# #client
-# mv export_grpc_pb.js client.js
-# mv export_grpc_pb.d.ts client.d.ts
-
-# # types
-# mv export_pb.js types.js
-# mv export_pb.d.ts types.d.ts

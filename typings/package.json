@@ -1,21 +1,21 @@
 {
 	"name": "@fyko/export-api",
 	"description": "Generated code for interacting with the Export API.",
-	"version": "0.2.0",
+	"version": "0.2.1",
 	"license": "MIT",
 	"exports": {
 		"./client": {
-			"require": "./client.js",
-			"import": "./client.mjs"
+			"require": "./dist/client.js",
+			"import": "./dist/client.mjs"
 		},
 		"./types": {
-			"require": "./types.js",
-			"import": "./types.mjs"
+			"require": "./dist/types.js",
+			"import": "./dist/types.mjs"
 		}
 	},
 	"files": [
 		"generated",
-		"{client,types}.{js,js.map,d.ts,d.ts.map,mjs}"
+		"dist/{client,types}.{js,js.map,d.ts,d.ts.map,mjs}"
 	],
 	"repository": {
 		"type": "git",
@@ -27,8 +27,8 @@
 		"build": "yarn generate && run-p 'esm:*'",
 		"clean": "rimraf {client,types}.{js,mjs,d.ts,*map}",
 		"generate": "./scripts/build-protos.sh ../ExportAPI/Protos/export.proto ./dist",
-		"esm:client": "gen-esm-wrapper ./client.js ./client.mjs",
-		"esm:types": "gen-esm-wrapper ./types.js ./types.mjs",
+		"esm:client": "gen-esm-wrapper ./dist/client.js ./dist/client.mjs",
+		"esm:types": "gen-esm-wrapper ./dist/types.js ./dist/types.mjs",
 		"prepublish": "yarn suite"
 	},
 	"dependencies": {
@@ -45,7 +45,7 @@
 	},
 	"publishConfig": {
 		"access": "public",
-		"registry":"https://registry.npmjs.com"
+		"registry": "https://registry.npmjs.com"
 	},
 	"packageManager": "yarn@3.2.0-rc.16"
 }
