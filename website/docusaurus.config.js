@@ -7,7 +7,7 @@ const darkCodeTheme = require('prism-react-renderer/themes/dracula');
 /** @type {import('@docusaurus/types').Config} */
 const config = {
   title: 'Export API',
-  tagline: 'An API to export Discord channels as HTML documents.',
+  tagline: 'A gRPC Service to export Discord channels as HTML documents.',
   url: 'https://your-docusaurus-test-site.com',
   baseUrl: '/export-api/',
   onBrokenLinks: 'throw',

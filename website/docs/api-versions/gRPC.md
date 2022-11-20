@@ -1,12 +1,16 @@
 ---
 id: gRPC
-title: gRPC (reccomended)
+title: gRPC
 sidebar_position: 0
 ---
 
 v3 of the Export API introduces a gRPC API. One of the major upsides of using the gRPC protocol is a stream of progress updates and finally streaming the file back to the client.
 
-The `@fyko/export-api` package includes a typed JavaScript client and will be referenced in this part of the documentation.
+:::tip Client Package
+The `@fyko/export-api` package includes a typed JavaScript client and will be referenced in [Examples](#examples).
+:::
+
+
 
 ## Protobuf Definition
 
@@ -88,8 +92,33 @@ message ExportComplete {
 | message_count | int      | The number of messages exported  |
 | data          | byte[]   | The exported file in 32kb chunks |
 
-### Example
+## Examples
 
+### High-level
+This example uses the new `createExport`, `createExportedClient`, and `promisifyExportResult` functions released in `@fyko/export-api@0.3`.
+
+```ts
+import { writeFile } from "fs/promises";
+import { createExport, createExporterClient, promisifyExportResult } from "@fyko/export-api/client";
+import {
+  ExportFormat
+} from "@fyko/export-api/types";
+
+const stream = createExport(client, {
+  channelId: process.env.DISCORD_CHANNEL!,
+  token: process.env.DISCORD_TOKEN!,
+  exportFormat: ExportFormat.HTMLDARK,
+});
+
+stream.on("progress", (progress) =>  console.log(`progress: ${progress}`));
+
+const [count, file] = await promisifyExportResult(stream);
+
+console.log(`export created with ${count} messages (${file.byteLength} bytes)`);
+await writeFile("./foo.html", file);
+```
+
+### Low-level
 ```ts
 import { credentials } from "@grpc/grpc-js";
 import { ExporterClient } from "@fyko/export-api/client";
