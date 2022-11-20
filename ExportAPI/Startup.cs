@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Calzolari.Grpc.AspNetCore.Validation;
+// using Calzolari.Grpc.AspNetCore.Validation;
 using Microsoft.Extensions.Hosting;
 using ExportAPI.Services;
 using ExportAPI.Validators;
@@ -26,12 +26,10 @@ namespace ExportAPI
 			services.AddGrpc(options =>
 			{
 				options.Interceptors.Add<ExceptionInterceptor>();
-				options.EnableMessageValidation();
 			});
 			services.AddGrpcReflection();
 
-			services.AddValidator<CreateExportRequestValidator>();
-			services.AddGrpcValidation();
+			// services.AddValidator<CreateExportRequestValidator>();
 		}
 
 		// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -51,12 +49,7 @@ namespace ExportAPI
 			app.UseEndpoints(endpoints =>
 			{
 				endpoints.MapGrpcService<ExporterService>();
-				endpoints.MapControllers();
-
-				if (env.IsDevelopment())
-				{
-					endpoints.MapGrpcReflectionService();
-				}
+				endpoints.MapGrpcReflectionService();
 			});
 		}
 	}

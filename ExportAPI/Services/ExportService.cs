@@ -61,7 +61,6 @@ public class ExporterService : Exporter.ExporterBase
 
 	public override async Task CreateExport(CreateExportRequest options, IServerStreamWriter<CreateExportResponse> responseStream, ServerCallContext context)
 	{
-
 		var ef = options.ExportFormat;
 		var exportFormat = (DiscordChatExporter.Core.Exporting.ExportFormat)ef;
 
@@ -69,7 +68,7 @@ public class ExporterService : Exporter.ExporterBase
 		var channelId = parsed ?? Snowflake.Zero;
 
 		var client = new DiscordClient(options.Token);
-		client._tokenKind = TokenKind.Bot;
+		client._resolvedTokenKind = TokenKind.Bot;
 		Channel channel;
 		try
 		{
@@ -111,7 +110,7 @@ public class ExporterService : Exporter.ExporterBase
 		var exporter = new ChannelExporter(client);
 
 		_logger.LogInformation("Starting export");
-		var progress = new Progress<double>(p => responseStream.WriteAsync(new CreateExportResponse { Progress = p }));
+		var progress = new Progress<Percentage>(p => responseStream.WriteAsync(new CreateExportResponse { Progress = p.Value }));
 		var messageCount = await exporter.ExportChannelAsync(request, progress);
 		_logger.LogInformation("Finished exporting");
 

@@ -10,7 +10,7 @@
             "request": "launch",
             "preLaunchTask": "build",
             // If you have changed target frameworks, make sure to update the program path.
-            "program": "${workspaceFolder}/ExportAPI/bin/Debug/netcoreapp3.1/ExportAPI.dll",
+            "program": "${workspaceFolder}/ExportAPI/bin/Debug/net6.0/ExportAPI.dll",
             "args": [],
             "cwd": "${workspaceFolder}/ExportAPI",
             "stopAtEntry": false,

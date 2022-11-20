@@ -1,9 +1,9 @@
 name: Deploy Docker Image
 
 on:
-  release:
-    types: [published]
   push:
+    tags:
+      - "v*"
     branches: [main]
     paths:
       - "ExportAPI/**"
@@ -25,12 +25,20 @@ jobs:
           git submodule sync --recursive
           git -c "http.extraheader=$auth_header" -c protocol.version=2 submodule update --init --force --recursive --depth=1
 
+      # if the commit is tagged, use the tag as the image tag
+      - name: Set image tag
+        id: image_tag
+        run: |
+          if [[ $GITHUB_REF == refs/tags/* ]]; then
+            echo "::set-output name=tag::${GITHUB_REF#refs/tags/}"
+          fi
+
       - name: Build
         id: build
         uses: redhat-actions/buildah-build@v2
         with:
           image: fyko/export-api
-          tags: latest ${{ github.sha }}
+          tags: latest ${{ steps.image_tag.outputs.tag || '' }} ${{ github.sha }}
           dockerfiles: |
             ./Dockerfile
           build-args: |
