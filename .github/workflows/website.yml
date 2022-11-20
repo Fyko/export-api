@@ -18,8 +18,8 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           node-version: 16.x
-          cache: yarn
-          cache-dependency-path: 'website/yarn.lock'
+          cache: npm
+          cache-dependency-path: 'website/package-lock.json'
 
       - name: Build website
         working-directory: website
